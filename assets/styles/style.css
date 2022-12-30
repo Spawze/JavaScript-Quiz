@@ -1,5 +1,8 @@
+:root{
+    --mainBg: #333333
+}
 body{
-    background-color: #333;
+    background-color: var(--mainBg);
 }
 
 .main{
@@ -58,3 +61,52 @@ h1 {
     background-color: #5e58ac;
 }
 
+/* timer styles */
+.timer{
+    font-size: 30px;
+    margin-bottom: 40px;
+}
+#timer{
+    text-align: left;
+}
+#timer-value{
+    font-weight: bolder;
+    color: #ff4444
+}
+
+/* question styles */
+.question{
+    font-size: 50px;
+    margin: 20px;
+}
+
+/* answer styles */
+.answers-ul{
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-left: 5%;
+    font-size: 30px;
+}
+.answer-button{
+    margin-bottom: 20px;
+    background-color: #b1ffb1;
+    cursor: pointer;
+    padding: 5px;
+    font-weight: bold;
+}
+.answer-button:hover{
+    background-color: #c1ffc1;
+}
+
+/* right/wrong notification styles*/
+.right-wrong{
+    margin-top: 20px;
+    font-size: 30px;
+}
+#right{
+    color: #17db17
+}
+#wrong{
+    color: #ff3232
+}
