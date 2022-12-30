@@ -13,14 +13,14 @@ body{
     color: #b1ffb1;
 }
 h1 {
-    font-size: 50px;
-    margin: 10px;
+    font-size: 80px;
+    margin: 20px;
 }
 .description{
     margin-top: 50px;
     display: flex;
     justify-content: center;
-    font-size: 20px;
+    font-size: 25px;
 }
 .description p{
     width: 70%;
@@ -41,13 +41,13 @@ h1 {
     font-weight: bolder;
     width: 50%;
 }
-#start-button{
+.button{
     background-color: #b1ffb1;
 }
-#start-button:hover{
+.button:hover{
     background-color: #80b980;
 }
-#start-button:active{
+.button:active{
     background-color: #507550;
 }
 
@@ -98,6 +98,9 @@ h1 {
 .answer-button:hover{
     background-color: #c1ffc1;
 }
+.answer-button:active{
+    background-color: #94d694;
+}
 
 /* right/wrong notification styles*/
 .right-wrong{
@@ -109,4 +112,40 @@ h1 {
 }
 #wrong{
     color: #ff3232
+}
+
+/* styles for game over screen */
+#game-over{
+    font-size: 80px;
+    margin: 40px
+}
+.score-display{
+    font-size: 30px;
+    margin: 20px
+}
+.score-display span{
+    color: #17db17;
+}
+.initials-entry{
+    margin-bottom: 50px;
+}
+
+/* styles for score screen */
+
+.score-header{
+    font-size: 80px;
+    margin: 40px
+}
+.score-list{
+    font-size: 40px;
+    font-weight: bold;
+    text-align: left;
+    margin-bottom: 30px;
+    margin-left: 10%;
+}
+.score-list li{
+    margin-bottom: 20px;
+}
+.score-list li span{
+    color: #17db17;
 }

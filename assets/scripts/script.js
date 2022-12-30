@@ -72,15 +72,44 @@ wrongH4.textContent = "Wrong!"
 //Game over screen elements
 var gameOverDiv = document.createElement("div")
 var gameOverH2 = document.createElement("h2")
+gameOverH2.id = "game-over"
 
 var finalScoreValueDiv = document.createElement("div")
+finalScoreValueDiv.className = "score-display"
 var scoreDisplayH3 = document.createElement("h3")
 var scoreDisplaySpan = document.createElement("span")
 
 var initialsEntryDiv = document.createElement("div")
+initialsEntryDiv.className = "initials-entry"
 var initialsInput = document.createElement("input")
 var initialsSubmitButton = document.createElement("button")
 
+var flabbergasted = document.createElement("img")
+flabbergasted.setAttribute("src", "./assets/images/flabbergasted.jpg")
+flabbergasted.id = "cat"
+
+//Score Screen elements
+var scoresHeaderDiv = document.createElement("div")
+var scoresHeaderH2 = document.createElement("h2")
+scoresHeaderDiv.className = "score-header"
+
+var scoresUl = document.createElement("ul")
+var scoresLi1 = document.createElement("li")
+var scoresLi2 = document.createElement("li")
+var scoresLi3 = document.createElement("li")
+var scoresLi4 = document.createElement("li")
+var scoresLi5 = document.createElement("li")
+
+scoresUl.className = "score-list"
+scoresLi1.id = ("score-1")
+scoresLi2.id = ("score-2")
+scoresLi3.id = ("score-3")
+scoresLi4.id = ("score-4")
+scoresLi5.id = ("score-5")
+
+var scoresMenuButton = document.createElement("button")
+scoresMenuButton.id = "menu-button"
+scoresMenuButton.className = "button"
 
 //Create all questions and answers as objects, then store them all in an array
 var allQuestions = []
@@ -196,15 +225,10 @@ function startScreen() {
     bodyElement.appendChild(header)
     header.appendChild(titleH1)
 
-
-
     //using innerHTML instead of textContent lets me use the <br/> to break the line.
-    descriptionP.innerHTML = "Welcome to my Javascript quiz!<br />You will have " + (startTime / 10) + " seconds to answer " + allQuestions.length + " questions. If you answer correctly, you move onto the next question. If answer the question wrong, you lose " + (wrongPenalty / 10) + " seconds and move to the next question. Press the start button to begin, or the scores button to view the scores!"
+    descriptionP.innerHTML = "Welcome to my Javascript quiz!<br />You will have " + (startTime / 10) + " seconds to answer " + allQuestions.length + " questions. If you answer correctly, you move onto the next question. If answer the question wrong, you lose " + (wrongPenalty / 10) + " seconds and move to the next question. Only scores greater than 0 will be added to the scoreboard. Press the start button to begin, or the scores button to view the scores!"
     bodyElement.appendChild(descDiv)
     descDiv.appendChild(descriptionP)
-
-
-
 
     startButton.textContent = "Start"
     scoreButton.textContent = "Scores"
@@ -221,6 +245,8 @@ scoreButton.addEventListener("click", showScores)
 
 //start game
 function startGame() {
+    lastAnswerCorrect = null
+    gotAllCorrect = true
     timeLeft = startTime;
     currentQuestion = 0;
     timerValue.textContent = timeLeft
@@ -301,7 +327,6 @@ answer4Button.addEventListener("click", function () {
 
 //logic for getting it right or wrong
 function rightAnswer() {
-    console.log("correct")
     lastAnswerCorrect = true;
     currentQuestion++
     if (currentQuestion < allQuestions.length) {
@@ -312,7 +337,6 @@ function rightAnswer() {
 }
 
 function wrongAnswer() {
-    console.log("wrong")
     gotAllCorrect = false;
     lastAnswerCorrect = false;
     currentQuestion++
@@ -348,6 +372,8 @@ function stopTimer() {
 function gameOver() {
     stopTimer()
     clearScreen()
+    //set time left to 0 if it is a goes below from answering wrong
+    if (timeLeft < 0) { timeLeft = 0 };
     console.log("Score: " + timeLeft)
     console.log("Game Over")
 
@@ -369,8 +395,8 @@ function gameOver() {
     initialsEntryDiv.appendChild(initialsInput)
     initialsEntryDiv.appendChild(initialsSubmitButton)
     //easter egg if u got them all right :) 
-    if(gotAllCorrect){
-        
+    if (gotAllCorrect) {
+        bodyElement.appendChild(flabbergasted)
     }
 }
 //event listener for the initials submit button
@@ -390,16 +416,16 @@ function submitScores() {
             allScores = localStorage.getItem("scores")
             allScores = JSON.parse(allScores)
         }
-        console.log(scoreToSubmit)
-        allScores.push(scoreToSubmit)
-        console.log(allScores)
-        if (allScores.length > maxScores) {
-            removeSlowestScore()
-        }
-        sortScores()
+        //only splice scores if there are other scores to compare, otherwise just add it to all scores
+        if (scoreToSubmit.score > 0) {
+            spliceScore()
+            if (allScores.length > maxScores) {
+                removeSlowestScore()
+            }
+            localStorage.setItem("scores", JSON.stringify(allScores))
 
-        allScores = JSON.stringify(allScores)
-        localStorage.setItem("scores", allScores)
+        }
+        showScores()
     }
 }
 //  function to remove the slowest scores, so the save doesnt get cluttered with tons of scores
@@ -419,15 +445,54 @@ function removeSlowestScore() {
         console.log(allScores)
     }
 }
-function sortScores() {
-    allScores.splice()
+//puts the score in the right spot, in order
+function spliceScore() {
+    var currentLength = allScores.length
+    var posToSplice = maxScores + 1; //if the score isnt greater than any, it will be put at the end
+    for (var i = 0; i < currentLength; i++) {
+        if (scoreToSubmit.score >= allScores[i].score) {
+            posToSplice = i;
+            i = currentLength;
+        }
+    }
+    console.log("put score in position " + posToSplice)
+    allScores.splice(posToSplice, 0, scoreToSubmit)
 }
 
 //screen where scores show, main menu and restart buttons are at the bottom
 function showScores() {
-    //TODO: Sort scores
     clearScreen()
+    //get scores
+    allScores = JSON.parse(localStorage.getItem("scores"))
+    scoresHeaderH2.textContent = "Scores"
+    //only display scores if there are any
+    switch (allScores.length) {
+
+        case 5: scoresLi5.innerHTML = ("5th: " + allScores[4].init + ", Score: <span>" + (allScores[4].score / 10) + "</span>");
+        case 4: scoresLi4.innerHTML = ("4th: " + allScores[3].init + ", Score: <span>" + (allScores[3].score / 10) + "</span>")
+        case 3: scoresLi3.innerHTML = ("3rd: " + allScores[2].init + ", Score: <span>" + (allScores[2].score / 10) + "</span>")
+        case 2: scoresLi2.innerHTML = ("2nd: " + allScores[1].init + ", Score: <span>" + (allScores[1].score / 10) + "</span>")
+        case 1: scoresLi1.innerHTML = ("1st: " + allScores[0].init + ", Score: <span>" + (allScores[0].score / 10) + "</span>")
+            break;
+        default: scoresLi1.textContent = "No scores yet"
+    }
+    bodyElement.appendChild(scoresHeaderDiv)
+    scoresHeaderDiv.appendChild(scoresHeaderH2)
+
+    bodyElement.appendChild(scoresUl)
+    scoresUl.appendChild(scoresLi1)
+    scoresUl.appendChild(scoresLi2)
+    scoresUl.appendChild(scoresLi3)
+    scoresUl.appendChild(scoresLi4)
+    scoresUl.appendChild(scoresLi5)
+
+    scoresMenuButton.textContent = "Main Menu"
+    bodyElement.appendChild(scoresMenuButton)
 }
+//event listener for score main menu button
+scoresMenuButton.addEventListener("click", function () {
+    startScreen()
+})
 
 
 //function that clears all elements from the screen
@@ -435,11 +500,12 @@ function clearScreen() {
     bodyElement.replaceChildren()
 }
 //keydown event listener for debugging
-document.addEventListener("keydown", function (event) {
-    if(event.key == "/"){
-        timeLeft = 0;
-    }
-})
+// document.addEventListener("keydown", function (event) {
+//     if (event.key == "/") {
+//         gotAllCorrect = false;
+//         timeLeft = 0;
+//     }
+// })
 
 //function that will shuffle an array
 function shuffleArray(array) {
@@ -447,5 +513,9 @@ function shuffleArray(array) {
         var rand = Math.floor(Math.random() * (i + 1));
         [array[i], array[rand]] = [array[rand], array[i]]
     }
+}
+//establish local storage score if empty
+if (!localStorage.getItem("scores")) {
+    localStorage.setItem("scores", JSON.stringify([]))
 }
 startScreen()
